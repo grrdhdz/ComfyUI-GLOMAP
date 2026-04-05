@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-glomap"
+version = "0.1.0"
+description = "GLOMAP and COLMAP based 3D camera tracking nodes for ComfyUI."
+license = { text = "MIT" }
+requires-python = ">=3.10"
+
+[project.urls]
+Repository = "https://github.com/gerhh/ComfyUI-GLOMAP"
+
+[tool.comfy]
+PublisherId = "gerhh"
+DisplayName = "ComfyUI GLOMAP Camera Tracker"
+Icon = ""
