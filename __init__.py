@@ -1,6 +1,6 @@
 from comfy_api.latest import ComfyExtension
 from .nodes.downloader import GLOMAPSetup
-from .nodes.camera_tracker import GLOMAPCameraTracker
+from .nodes.camera_tracker import GLOMAPVfxTracker
 from .nodes.camera_exporter import GLOMAPExportCamera
 from .nodes.tracking_preview import GLOMAPTrackingPreview
 
@@ -10,7 +10,7 @@ class GLOMAPExtension(ComfyExtension):
     async def get_node_list(self):
         return [
             GLOMAPSetup,
-            GLOMAPCameraTracker,
+            GLOMAPVfxTracker,
             GLOMAPExportCamera,
             GLOMAPTrackingPreview
         ]

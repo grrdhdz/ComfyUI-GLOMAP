@@ -35,8 +35,8 @@ class GLOMAPExportCamera(io.ComfyNode):
                     tooltip="Scale factor for the exported scene"),
                 io.Combo.Input("up_axis", options=["Y_UP", "Z_UP"],
                     tooltip="Y_UP for Maya/Nuke/Resolve, Z_UP for Blender"),
-                io.Int.Input("original_fps", default=30, min=1, max=120,
-                    tooltip="FPS of original footage for animation timing")
+                io.Int.Input("fallback_fps", default=30, min=1, max=120,
+                    tooltip="FPS for animation timing if not auto-detected by Tracker")
             ],
             outputs=[
                 io.String.Output(display_name="export_dir"),
@@ -48,7 +48,7 @@ class GLOMAPExportCamera(io.ComfyNode):
     @classmethod
     def execute(cls, reconstruction, config, output_directory, filename_prefix,
                 export_fbx, export_alembic, export_nuke, export_ply, export_colmap_native, 
-                scene_scale, up_axis, original_fps) -> io.NodeOutput:
+                scene_scale, up_axis, fallback_fps) -> io.NodeOutput:
         
         if not output_directory:
             base_out_dir = Path(reconstruction["workspace_dir"]) / "export"
@@ -65,18 +65,23 @@ class GLOMAPExportCamera(io.ComfyNode):
         # Clean prefix just in case user left an extension
         clean_prefix = filename_prefix.replace(".fbx", "").replace(".nk", "").replace(".abc", "").replace(".ply", "")
         
+        # Use detected FPS from Tracker if available, otherwise use fallback
+        active_fps = reconstruction.get("fps")
+        if not active_fps or active_fps <= 0:
+            active_fps = fallback_fps
+            
         if export_colmap_native:
             fmt_dir = base_out_dir / "colmap_native"
             fmt_dir.mkdir(parents=True, exist_ok=True)
             out_path = do_export_colmap_native(reconstruction, fmt_dir / clean_prefix)
-            logs.append(f"Exported COLMAP native to {out_path}")
+            logs.append(f"Exported COLMAP native to {out_path} (fps: {active_fps})")
             
         if export_nuke:
             fmt_dir = base_out_dir / "nuke"
             fmt_dir.mkdir(parents=True, exist_ok=True)
             out_file = fmt_dir / f"{clean_prefix}.nk"
-            out_path = export_nuke_nk(reconstruction, out_file, scene_scale, original_fps)
-            logs.append(f"Exported Nuke script to {out_path}")
+            out_path = export_nuke_nk(reconstruction, out_file, scene_scale, active_fps)
+            logs.append(f"Exported Nuke script to {out_path} (fps: {active_fps})")
             
         if export_ply:
             fmt_dir = base_out_dir / "ply"
@@ -104,7 +109,8 @@ class GLOMAPExportCamera(io.ComfyNode):
                     'format': fmt,
                     'scene_scale': scene_scale,
                     'up_axis': up_axis,
-                    'export_pointcloud': export_ply
+                    'export_pointcloud': export_ply,
+                    'fps': active_fps
                 }
                 cfg_path = fmt_dir / f"{clean_prefix}_blender_cfg.json"
                 with open(cfg_path, 'w') as f:

@@ -1,0 +1,9 @@
+vcpkg/
+build_colmap/
+colmap_source/
+cuDSS/
+bin/
+temp/
+*.log
+*.zip
+*.tar.gz

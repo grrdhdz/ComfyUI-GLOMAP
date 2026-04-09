@@ -75,6 +75,14 @@ def main():
     bpy.context.scene.collection.objects.link(cam_obj)
     
     # 2. Add animation keyframes
+    if cfg.get('fps') and cfg['fps'] > 0:
+        fps_float = float(cfg['fps'])
+        if fps_float.is_integer():
+            bpy.context.scene.render.fps = int(fps_float)
+            bpy.context.scene.render.fps_base = 1.0
+        else:
+            bpy.context.scene.render.fps = int(round(fps_float * 1000))
+            bpy.context.scene.render.fps_base = 1000.0
     images = read_colmap_images(cfg['images_txt'])
     scene_scale = cfg.get('scene_scale', 1.0)
     

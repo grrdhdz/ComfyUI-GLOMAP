@@ -1,0 +1,7 @@
+COLMAP VERSION: 4.0.2
+GLOMAP INTEGRATED: YES (via global_mapper)
+GPU ACCELERATION: CUDA 13 + cuDSS (Ceres Solver)
+TRACKER TYPE: VFX Zero RAM
+RELEASE DATE: 2026-04-09
+NOTES: This version is optimized for RTX 50 series (Architecture 120) and native CUDA 13.
+It replaces the old separate GLOMAP + COLMAP binaries with a unified GPU-accelerated pipeline.
